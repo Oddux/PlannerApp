@@ -19,13 +19,38 @@
   // attribute of each time-block be used to do this?
 
 var today = dayjs();
-$("#currentDay").text(today.format('dddd MMM D, YYYY h:mm:ss'))
+$("#currentDay").text(today.format('dddd MMM D, YYYY'))
 
-var currentTimeBlock = parseInt(dayjs().format('HH'))
-  console.log(currentTimeBlock)
-  console.log(typeof currentTimeBlock)
+var currentHour = parseInt(dayjs().format('HH'))
+  console.log(currentHour)
 
-$(function () {
+function pullFromLocal() {
+  $(".time-block").each(function(){
+    var blockId = $(this).attr("id")
+    $(this).children(".description").val( localStorage.getItem(blockId));
+  })}
 
+$(".time-block").each(function(){
+  var blockHour = parseInt($(this).attr("data-hour"))
+  if (blockHour > currentHour){
+    $(this).addClass("future")
+  }else if(blockHour < currentHour){
+    $(this).addClass("past")
+  }else if(blockHour == currentHour){
+    $(this).addClass("present")
+  }
+})
 
-});
+//Reference the save buttons, which on click will write the data written into the timeblocks
+//into local storage. Then add a function that when the page is loaded will call the data
+//into the page.
+
+$(".btn").each(function(){
+  $(this).on("click", function(){
+    var textToSave = $(this).siblings(".description").val()
+    var hourToSave = $(this).parent().attr("id")
+    localStorage.setItem(hourToSave, textToSave)
+  })
+})
+
+pullFromLocal()
